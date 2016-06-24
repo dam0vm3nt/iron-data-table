@@ -34,7 +34,7 @@
         grid = fixture('grid');
 
         Polymer.dom.flush();
-        
+
         grid.items = [{
           value: 'foo',
           value2: 'fooz'
@@ -67,7 +67,7 @@
 
           fireEvent('tap', {}, sortIcon);
 
-          expect(sortIcon.querySelector('iron-icon').hasAttribute('active')).to.be.true;
+          expect(columnSortElement(0).querySelector('paper-icon-button').hasAttribute('direction')).to.be.true;
         });
 
         it('should change sorting direction on tap', function() {
@@ -83,7 +83,7 @@
 
           fireEvent('tap', {}, columnSort.$.sortIcon);
 
-          expect(grid.sortOrder).to.eql({
+          expect(grid.sortOrder[0]).to.eql({
             path: 'value',
             direction: 'asc'
           });
@@ -95,7 +95,7 @@
           fireEvent('tap', {}, columnSort.$.sortIcon);
           fireEvent('tap', {}, columnSort.$.sortIcon);
 
-          expect(grid.sortOrder).to.eql({
+          expect(grid.sortOrder[0]).to.eql({
             path: 'value',
             direction: 'desc'
           });
@@ -103,20 +103,26 @@
       });
 
       describe('using sortOrder property', function() {
-        it('should sort items ascending', function() {
-          grid.set('sortOrder', {path: 'value', direction: 'asc'});
+        it('should sort items ascending', function(done) {
+          grid.push('sortOrder', {path: 'value', direction: 'asc'});
 
-          expect(grid.$.list.items[0]).to.eql({value: 'bar', value2: 'bah'});
+          grid.async(function() {
+            expect(grid.$.list.items[0]).to.eql({value: 'bar', value2: 'bah'});
+            done();
+          }, 100);
         });
 
-        it('should sort items descending', function() {
-          grid.set('sortOrder', {path: 'value', direction: 'desc'});
+        it('should sort items descending', function(done) {
+          grid.push('sortOrder', {path: 'value', direction: 'desc'});
 
-          expect(grid.$.list.items[0]).to.eql({value: 'qux', value2: 'baz'});
+          grid.async(function() {
+            expect(grid.$.list.items[0]).to.eql({value: 'qux', value2: 'baz'});
+            done();
+          }, 100);
         });
 
         it('should update sorting icon', function() {
-          grid.set('sortOrder', {path: 'value2', direction: 'desc'});
+          grid.push('sortOrder', {path: 'value2', direction: 'desc'});
 
           var columnSort = columnSortElement(1);
 
